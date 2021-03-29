@@ -32,7 +32,6 @@ Options:
 from docopt import docopt
 
 import sense.display
-from sense.audio_player import PlaySoundOnEvent
 from sense.controller import Controller
 from sense.downstream_tasks.airdrums import LAB2INT
 from sense.downstream_tasks.nn_utils import LogisticRegression
@@ -86,9 +85,6 @@ if __name__ == "__main__":
                                  expected_inference_fps=net.fps / net.step_size),
         sense.display.DisplayTopKClassificationOutputs(top_k=1, threshold=0.5),
     ]
-    display_ops.extend(
-        PlaySoundOnEvent(tag) for tag in LAB2INT
-    )
     display_results = sense.display.DisplayResults(title='AirDrums', display_ops=display_ops,
                                                    border_size=100)
 
