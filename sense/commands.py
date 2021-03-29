@@ -12,6 +12,7 @@ class TagCommand:
     def __call__(self, predictions: Dict[str, any]):
         if predictions.get(self.tag):
             self.action()
+        return True
 
     def action(self):
         raise NotImplementedError
