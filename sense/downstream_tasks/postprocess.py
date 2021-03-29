@@ -102,3 +102,27 @@ class ExerciceSpecificRepCounter:
             if classif_output[self.inverse_mapping[self.position0]] > self.threshold:
                 self.position = 0
                 self.count += 1
+
+
+class DetectEvent(PostProcessor):
+
+    def __init__(self, tag, idx, threshold=0.5, **kwargs):
+        super().__init__(**kwargs)
+        self.tag = tag
+        self.idx = idx
+        self.threshold = threshold
+        self.active = False
+
+    def postprocess(self, classif_output):
+        event_detected = False
+        if classif_output is None:
+            pass
+        elif not self.active and classif_output[self.tag] > self.threshold:
+            # Event started
+            self.active = True
+            event_detected = True
+        elif self.active and classif_output[self.idx] < self.threshold:
+            # Event stopped
+            self.active = False
+
+        return {self.tag: event_detected}
