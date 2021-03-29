@@ -32,11 +32,15 @@ Options:
 from docopt import docopt
 
 import sense.display
+from sense.commands import DrumCommand
 from sense.controller import Controller
-from sense.downstream_tasks.airdrums import LAB2INT
+# TODO: Use airdrums LAB2INT
+from sense.downstream_tasks.gesture_recognition import INT2LAB
+from sense.downstream_tasks.gesture_recognition import LAB2INT
 from sense.downstream_tasks.nn_utils import LogisticRegression
 from sense.downstream_tasks.nn_utils import Pipe
 from sense.downstream_tasks.postprocess import DetectEvent
+from sense.downstream_tasks.postprocess import PostprocessClassificationOutput
 from sense.loading import build_backbone_network
 from sense.loading import get_relevant_weights
 from sense.loading import ModelConfig
@@ -69,16 +73,17 @@ if __name__ == "__main__":
 
     # Load a logistic regression classifier
     airdrums = LogisticRegression(num_in=backbone_network.feature_dim,
-                                  num_out=5)
+                                  num_out=30)
     airdrums.load_state_dict(weights['airdrums'])
     airdrums.eval()
 
     # Concatenate backbone network and rep counter
     net = Pipe(backbone_network, airdrums)
 
-    postprocessor = [
+    postprocessor = [PostprocessClassificationOutput(INT2LAB, smoothing=4)]
+    postprocessor.extend(
         DetectEvent(tag, idx) for tag, idx in LAB2INT.items()
-    ]
+    )
 
     display_ops = [
         sense.display.DisplayFPS(expected_camera_fps=net.fps,
@@ -88,12 +93,18 @@ if __name__ == "__main__":
     display_results = sense.display.DisplayResults(title='AirDrums', display_ops=display_ops,
                                                    border_size=100)
 
+    # Initialize Drum commands
+    drum_commands = [
+        DrumCommand('Swiping left', '../resources/airdrums/audio_Snare5.wav'),
+        DrumCommand('Swiping right', '../resources/airdrums/audio_Kick5.wav')
+    ]
+
     # Run live inference
     controller = Controller(
         neural_network=net,
         post_processors=postprocessor,
         results_display=display_results,
-        callbacks=[],
+        callbacks=drum_commands,
         camera_id=camera_id,
         path_in=path_in,
         path_out=path_out,

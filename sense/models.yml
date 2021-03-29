@@ -12,6 +12,8 @@ StridedInflatedEfficientNet:
     gesture_recognition: gesture_recognition/sien_logreg.ckpt
     met_converter: calorie_estimation/sien_met_converter.ckpt
     rep_counter: fitness_rep_counting/sien_logreg.ckpt
+    # TODO: Change to actual checkpoint
+    airdrums: gesture_recognition/sien_logreg.ckpt
 
 StridedInflatedMobileNetV2:
 
