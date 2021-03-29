@@ -30,13 +30,14 @@ Options:
   --use_gpu                       Whether to run inference on the GPU or not.
 """
 from docopt import docopt
+import os
 
 import sense.display
+from sense import RESOURCES_DIR
 from sense.commands import DrumCommand
 from sense.controller import Controller
-# TODO: Use airdrums LAB2INT
-from sense.downstream_tasks.gesture_recognition import INT2LAB
-from sense.downstream_tasks.gesture_recognition import LAB2INT
+from sense.downstream_tasks.airdrums import INT2LAB
+from sense.downstream_tasks.airdrums import LAB2INT
 from sense.downstream_tasks.nn_utils import LogisticRegression
 from sense.downstream_tasks.nn_utils import Pipe
 from sense.downstream_tasks.postprocess import DetectEvent
@@ -44,6 +45,7 @@ from sense.downstream_tasks.postprocess import PostprocessClassificationOutput
 from sense.loading import build_backbone_network
 from sense.loading import get_relevant_weights
 from sense.loading import ModelConfig
+from sense.loading import update_backbone_weights
 
 
 SUPPORTED_MODEL_CONFIGURATIONS = [
@@ -68,13 +70,18 @@ if __name__ == "__main__":
         model_version
     )
 
-    # Load backbone network
-    backbone_network = build_backbone_network(selected_config, weights['backbone'])
+    # Load weights
+    backbone_weights = weights['backbone']
+    airdrums_checkpoint = weights['airdrums']
+
+    # Update original weights in case some intermediate layers have been finetuned
+    update_backbone_weights(backbone_weights, airdrums_checkpoint)
+    backbone_network = build_backbone_network(selected_config, backbone_weights)
 
     # Load a logistic regression classifier
     airdrums = LogisticRegression(num_in=backbone_network.feature_dim,
-                                  num_out=30)
-    airdrums.load_state_dict(weights['airdrums'])
+                                  num_out=len(LAB2INT))
+    airdrums.load_state_dict(airdrums_checkpoint)
     airdrums.eval()
 
     # Concatenate backbone network and rep counter
@@ -82,21 +89,27 @@ if __name__ == "__main__":
 
     postprocessor = [PostprocessClassificationOutput(INT2LAB, smoothing=4)]
     postprocessor.extend(
-        DetectEvent(tag, idx) for tag, idx in LAB2INT.items()
+        DetectEvent(tag, idx, threshold=0.1) for tag, idx in LAB2INT.items()
     )
 
     display_ops = [
         sense.display.DisplayFPS(expected_camera_fps=net.fps,
                                  expected_inference_fps=net.fps / net.step_size),
-        sense.display.DisplayTopKClassificationOutputs(top_k=1, threshold=0.5),
+        sense.display.DisplayTopKClassificationOutputs(top_k=3, threshold=0),
     ]
     display_results = sense.display.DisplayResults(title='AirDrums', display_ops=display_ops,
                                                    border_size=100)
 
     # Initialize Drum commands
     drum_commands = [
-        DrumCommand('Swiping left', '../resources/airdrums/audio_Snare5.wav'),
-        DrumCommand('Swiping right', '../resources/airdrums/audio_Kick5.wav')
+        DrumCommand("High Tom_position_1", os.path.join(RESOURCES_DIR, 'airdrums', 'Tom4.wav')),
+        DrumCommand("Crash Cymbal_position_1", os.path.join(RESOURCES_DIR, 'airdrums', 'Ride4.wav')),
+        DrumCommand("Hi-Hats_position_1", os.path.join(RESOURCES_DIR, 'airdrums', 'Hat5.wav')),
+        DrumCommand("Ride Cymbal_position_1", os.path.join(RESOURCES_DIR, 'airdrums', 'Ride5.wav')),
+        DrumCommand("Mid Tom_position_1", os.path.join(RESOURCES_DIR, 'airdrums', 'Tom5.wav')),
+        DrumCommand("Floor Tom_position_1", os.path.join(RESOURCES_DIR, 'airdrums', 'Floor5.wav')),
+        DrumCommand("Snare_position_1", os.path.join(RESOURCES_DIR, 'airdrums', 'Snare5.wav')),
+        DrumCommand("Bass Drum_position_1", os.path.join(RESOURCES_DIR, 'airdrums', 'Kick5.wav')),
     ]
 
     # Run live inference
