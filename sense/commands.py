@@ -1,3 +1,4 @@
+import simpleaudio as sa
 from typing import Dict
 
 
@@ -14,3 +15,12 @@ class TagCommand:
 
     def action(self):
         raise NotImplementedError
+
+
+class DrumCommand(TagCommand):
+    def __init__(self, tag: str, wav_file_path: str):
+        super().__init__(tag)
+        self.sound = sa.WaveObject.from_wave_file(wav_file_path)
+
+    def action(self):
+        self.sound.play()
