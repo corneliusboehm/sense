@@ -117,7 +117,7 @@ class DetectEvent(PostProcessor):
         event_detected = False
         if classif_output is None:
             pass
-        elif not self.active and classif_output[self.tag] > self.threshold:
+        elif not self.active and classif_output[self.idx] > self.threshold:
             # Event started
             self.active = True
             event_detected = True
