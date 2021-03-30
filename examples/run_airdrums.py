@@ -46,7 +46,7 @@ from sense.loading import build_backbone_network
 from sense.loading import get_relevant_weights
 from sense.loading import ModelConfig
 from sense.loading import update_backbone_weights
-
+from sense.utils import WriteToFileCallback
 
 SUPPORTED_MODEL_CONFIGURATIONS = [
     ModelConfig('StridedInflatedEfficientNet', 'pro', ['airdrums']),
@@ -114,12 +114,18 @@ if __name__ == "__main__":
         DrumCommand("Bass Drum_position_1", os.path.join(WAV_FILE_DIR, 'Kick', 'RD_K_4.wav')),
     ]
 
+    write_to_file = WriteToFileCallback(
+        labels=LAB2INT.keys(),
+        filename='output.csv',
+        lab2int=LAB2INT
+    )
+
     # Run live inference
     controller = Controller(
         neural_network=net,
         post_processors=postprocessor,
         results_display=display_results,
-        callbacks=drum_commands,
+        callbacks=drum_commands + [write_to_file],
         camera_id=camera_id,
         path_in=path_in,
         path_out=path_out,
