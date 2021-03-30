@@ -92,7 +92,7 @@ if __name__ == "__main__":
 
     postprocessor = [PostprocessClassificationOutput(INT2LAB, smoothing=4)]
     postprocessor.extend(
-        PeakDetectEvent(tag, idx, threshold=0.05) for tag, idx in LAB2INT.items()
+        PeakDetectEvent(tag, idx, threshold=0.1) for tag, idx in LAB2INT.items()
     )
 
     display_ops = [
