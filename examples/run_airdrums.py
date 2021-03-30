@@ -52,6 +52,8 @@ SUPPORTED_MODEL_CONFIGURATIONS = [
     ModelConfig('StridedInflatedEfficientNet', 'pro', ['airdrums']),
 ]
 
+WAV_FILE_DIR = os.path.join(RESOURCES_DIR, 'airdrums')
+
 
 if __name__ == "__main__":
     # Parse arguments
@@ -102,14 +104,14 @@ if __name__ == "__main__":
 
     # Initialize Drum commands
     drum_commands = [
-        DrumCommand("High Tom_position_1", os.path.join(RESOURCES_DIR, 'airdrums', 'Tom4.wav')),
-        DrumCommand("Crash Cymbal_position_1", os.path.join(RESOURCES_DIR, 'airdrums', 'Ride4.wav')),
-        DrumCommand("Hi-Hats_position_1", os.path.join(RESOURCES_DIR, 'airdrums', 'Hat5.wav')),
-        DrumCommand("Ride Cymbal_position_1", os.path.join(RESOURCES_DIR, 'airdrums', 'Ride5.wav')),
-        DrumCommand("Mid Tom_position_1", os.path.join(RESOURCES_DIR, 'airdrums', 'Tom5.wav')),
-        DrumCommand("Floor Tom_position_1", os.path.join(RESOURCES_DIR, 'airdrums', 'Floor5.wav')),
-        DrumCommand("Snare_position_1", os.path.join(RESOURCES_DIR, 'airdrums', 'Snare5.wav')),
-        DrumCommand("Bass Drum_position_1", os.path.join(RESOURCES_DIR, 'airdrums', 'Kick5.wav')),
+        DrumCommand("High Tom_position_1", os.path.join(WAV_FILE_DIR, 'Toms', 'High Tom', 'RD_T_HT_3.wav')),
+        DrumCommand("Crash Cymbal_position_1", os.path.join(WAV_FILE_DIR, 'Cymbals', 'Crash', 'RD_C_C_3.wav')),
+        DrumCommand("Hi-Hats_position_1", os.path.join(WAV_FILE_DIR, 'Cymbals', 'Hi Hat', 'RD_C_HH_5.wav')),
+        DrumCommand("Ride Cymbal_position_1", os.path.join(WAV_FILE_DIR, 'Cymbals', 'Ride', 'RD_C_R_6.wav')),
+        DrumCommand("Mid Tom_position_1", os.path.join(WAV_FILE_DIR, 'Toms', 'Mid Tom', 'RD_T_MT_1.wav')),
+        DrumCommand("Floor Tom_position_1", os.path.join(WAV_FILE_DIR, 'Toms', 'Floor Tom', 'RD_T_FT_4.wav')),
+        DrumCommand("Snare_position_1", os.path.join(WAV_FILE_DIR, 'Snare', 'RD_S_6.wav')),
+        DrumCommand("Bass Drum_position_1", os.path.join(WAV_FILE_DIR, 'Kick', 'RD_K_4.wav')),
     ]
 
     # Run live inference
