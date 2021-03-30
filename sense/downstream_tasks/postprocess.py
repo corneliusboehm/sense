@@ -126,3 +126,26 @@ class DetectEvent(PostProcessor):
             self.active = False
 
         return {self.tag: event_detected}
+
+
+class PeakDetectEvent(DetectEvent):
+    def __init__(self, tag, idx, threshold=0.5, **kwargs):
+        super().__init__(tag, idx, threshold, **kwargs)
+        self.buffer = deque([0, 0, 0], maxlen=3)
+
+    def postprocess(self, classif_output):
+        event_detected = False
+
+        if classif_output is None:
+            pass
+        else:
+            self.buffer.append(classif_output[self.idx])
+
+            if (
+                self.buffer[0] < self.buffer[1] > self.buffer[2]
+                and self.buffer[1] > self.threshold
+            ):
+                event_detected = True
+
+        return {self.tag: event_detected}
+

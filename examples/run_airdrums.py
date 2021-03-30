@@ -41,6 +41,7 @@ from sense.downstream_tasks.airdrums import LAB2INT
 from sense.downstream_tasks.nn_utils import LogisticRegression
 from sense.downstream_tasks.nn_utils import Pipe
 from sense.downstream_tasks.postprocess import DetectEvent
+from sense.downstream_tasks.postprocess import PeakDetectEvent
 from sense.downstream_tasks.postprocess import PostprocessClassificationOutput
 from sense.loading import build_backbone_network
 from sense.loading import get_relevant_weights
@@ -91,7 +92,7 @@ if __name__ == "__main__":
 
     postprocessor = [PostprocessClassificationOutput(INT2LAB, smoothing=4)]
     postprocessor.extend(
-        DetectEvent(tag, idx, threshold=0.1) for tag, idx in LAB2INT.items()
+        PeakDetectEvent(tag, idx, threshold=0.05) for tag, idx in LAB2INT.items()
     )
 
     display_ops = [
