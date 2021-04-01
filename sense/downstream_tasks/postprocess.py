@@ -129,6 +129,7 @@ class DetectEvent(PostProcessor):
 
 
 class PeakDetectEvent(DetectEvent):
+
     def __init__(self, tag, idx, threshold=0.5, **kwargs):
         super().__init__(tag, idx, threshold, **kwargs)
         self.buffer = deque([0, 0], maxlen=2)
@@ -143,12 +144,13 @@ class PeakDetectEvent(DetectEvent):
             self.buffer.append(classif_output[self.idx])
 
             if self.can_be_triggered:
-                if self.buffer[1] > self.threshold:
+                if self.buffer[1] > self.buffer[0] and self.buffer[1] > self.threshold:
+                    # Confidence rising and above threshold -> Approaching new peak
                     event_detected = True
                     self.can_be_triggered = False
             else:
                 if self.buffer[0] > self.buffer[1]:
+                    # Confidence falling -> Peak is over
                     self.can_be_triggered = True
 
         return {self.tag: event_detected}
-
