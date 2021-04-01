@@ -153,6 +153,12 @@ def uniform_frame_sample(video, sample_rate):
         offset = int((depth - indices[-1]) / 2)
         sampled_frames = (indices + offset).astype(np.int32)
         return video[sampled_frames]
+    elif sample_rate > 1:
+        num_frames = int(sample_rate * depth)
+        new_indices = np.array(list(range(num_frames)))
+        new_indices = (new_indices / sample_rate).astype(int)
+        new_indices = np.clip(new_indices, 0, depth -1)
+        video = video[new_indices, :]
     return video
 
 
