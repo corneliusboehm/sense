@@ -41,6 +41,7 @@ from sense.downstream_tasks.airdrums import LAB2INT
 from sense.downstream_tasks.nn_utils import LogisticRegression
 from sense.downstream_tasks.nn_utils import Pipe
 from sense.downstream_tasks.postprocess import DetectEvent
+from sense.downstream_tasks.postprocess import PeakDetectEvent
 from sense.downstream_tasks.postprocess import PostprocessClassificationOutput
 from sense.loading import build_backbone_network
 from sense.loading import get_relevant_weights
@@ -91,16 +92,15 @@ if __name__ == "__main__":
 
     postprocessor = [PostprocessClassificationOutput(INT2LAB, smoothing=4)]
     postprocessor.extend(
-        DetectEvent(tag, idx, threshold=0.1) for tag, idx in LAB2INT.items()
+        PeakDetectEvent(tag, idx, threshold=0.2) for tag, idx in LAB2INT.items()
     )
 
     display_ops = [
         sense.display.DisplayFPS(expected_camera_fps=net.fps,
                                  expected_inference_fps=net.fps / net.step_size),
-        sense.display.DisplayTopKClassificationOutputs(top_k=3, threshold=0),
+        sense.display.DisplayTopKClassificationOutputs(top_k=2, threshold=0),
     ]
-    display_results = sense.display.DisplayResults(title='AirDrums', display_ops=display_ops,
-                                                   border_size=100)
+    display_results = sense.display.DisplayResults(title='', display_ops=display_ops, border_size=50)
 
     # Initialize Drum commands
     drum_commands = [
