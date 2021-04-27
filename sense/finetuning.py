@@ -108,7 +108,7 @@ class FeaturesDataset(torch.utils.data.Dataset):
         return [features, label, temporal_annotation]
 
 
-def generate_data_loader(features_dir, tags_dir, label_names, label2int,
+def generate_data_loader(project_config, features_dir, tags_dir, label_names, label2int,
                          label2int_temporal_annotation, num_timesteps=5, batch_size=16, shuffle=True,
                          stride=4, temporal_annotation_only=False,
                          full_network_minimum_frames=MODEL_TEMPORAL_DEPENDENCY, one_hot=False):
@@ -125,13 +125,17 @@ def generate_data_loader(features_dir, tags_dir, label_names, label2int,
         labels += [label2int[label]] * len(feature_temp)
         labels_string += [label] * len(feature_temp)
 
-    # check if annotation exist for each video
+    # Check if temporal annotations exist for each video
     for label, feature in zip(labels_string, features):
-        class_mapping = {0: "counting_background",
-                         1: f'{label}_position_1',
-                         2: f'{label}_position_2'}
         temporal_annotation_file = feature.replace(features_dir, tags_dir).replace(".npy", ".json")
         if os.path.isfile(temporal_annotation_file) and temporal_annotation_only:
+            if project_config:
+                tag1, tag2 = project_config['classes'][label]
+            else:
+                tag1 = f'{label}_tag1'
+                tag2 = f'{label}_tag2'
+            class_mapping = {0: 'background', 1: tag1, 2: tag2}
+
             annotation = json.load(open(temporal_annotation_file))["time_annotation"]
             annotation = np.array([label2int_temporal_annotation[class_mapping[y]] for y in annotation])
             temporal_annotation.append(annotation)
@@ -155,25 +159,6 @@ def generate_data_loader(features_dir, tags_dir, label_names, label2int,
         return None
 
 
-def uniform_frame_sample(video, sample_rate):
-    """
-    Uniformly sample video frames according to the provided sample_rate.
-    """
-    depth = video.shape[0]
-    if sample_rate < 1.:
-        indices = np.arange(0, depth, 1. / sample_rate)
-        offset = int((depth - indices[-1]) / 2)
-        sampled_frames = (indices + offset).astype(np.int32)
-        return video[sampled_frames]
-    elif sample_rate > 1:
-        num_frames = int(sample_rate * depth)
-        new_indices = np.array(list(range(num_frames)))
-        new_indices = (new_indices / sample_rate).astype(int)
-        new_indices = np.clip(new_indices, 0, depth -1)
-        video = video[new_indices, :]
-    return video
-
-
 def extract_frames(video_path, inference_engine, path_frames=None, return_frames=True):
     save_frames = path_frames is not None and not os.path.exists(path_frames)
 
@@ -182,8 +167,9 @@ def extract_frames(video_path, inference_engine, path_frames=None, return_frames
         return None
 
     # Read frames from video
-    video_source = camera.VideoSource(size=inference_engine.expected_frame_size, filename=video_path)
-    video_fps = video_source.get_fps()
+    video_source = camera.VideoSource(size=inference_engine.expected_frame_size,
+                                      filename=video_path,
+                                      target_fps=inference_engine.fps)
     frames = []
 
     while True:
@@ -194,7 +180,7 @@ def extract_frames(video_path, inference_engine, path_frames=None, return_frames
             image, image_rescaled = images
             frames.append(image_rescaled)
 
-    frames = uniform_frame_sample(np.array(frames), inference_engine.fps / video_fps)
+    frames = np.array(frames)
 
     # Save frames if a path was provided
     if save_frames:
