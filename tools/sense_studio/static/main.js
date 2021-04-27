@@ -56,7 +56,11 @@ async function editNewProject() {
     let path = pathInput.value;
 
     let directoriesResponse = await browseDirectory(path, name);
-    fullPathDiv.innerHTML = directoriesResponse.full_project_path;
+
+    // Show project path and highlight the name of the folder that will be created
+    pathPrefix = directoriesResponse.project_path_prefix
+    projectDir = directoriesResponse.project_dir
+    fullPathDiv.innerHTML = `<p>${pathPrefix}<span class='uk-text-primary uk-text-bolder'>${projectDir}</span></p>`;
 
     let disabled = false;
 
@@ -67,7 +71,7 @@ async function editNewProject() {
     } else if (!directoriesResponse.project_name_unique) {
         setFormWarning(nameLabel, nameInput, 'This project name is already used');
         disabled = true;
-    } else if (directoriesResponse.full_path_exists) {
+    } else if (directoriesResponse.project_dir_exists) {
         setFormWarning(nameLabel, nameInput, 'A directory with this name already exists in the chosen location');
         disabled = true;
     } else {
