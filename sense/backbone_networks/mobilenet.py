@@ -151,7 +151,7 @@ class InvertedResidual(nn.Module):  # noqa: D101
 class StridedInflatedMobileNetV2(RealtimeNeuralNet):
 
     expected_frame_size = (256, 256)
-    fps = 16
+    fps = 32
     step_size = 4
     feature_dim = 1280
 

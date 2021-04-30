@@ -102,3 +102,55 @@ class ExerciceSpecificRepCounter:
             if classif_output[self.inverse_mapping[self.position0]] > self.threshold:
                 self.position = 0
                 self.count += 1
+
+
+class DetectEvent(PostProcessor):
+
+    def __init__(self, tag, idx, threshold=0.5, **kwargs):
+        super().__init__(**kwargs)
+        self.tag = tag
+        self.idx = idx
+        self.threshold = threshold
+        self.active = False
+
+    def postprocess(self, classif_output):
+        event_detected = False
+        if classif_output is None:
+            pass
+        elif not self.active and classif_output[self.idx] > self.threshold:
+            # Event started
+            self.active = True
+            event_detected = True
+        elif self.active and classif_output[self.idx] < self.threshold:
+            # Event stopped
+            self.active = False
+
+        return {self.tag: event_detected}
+
+
+class PeakDetectEvent(DetectEvent):
+
+    def __init__(self, tag, idx, threshold=0.5, **kwargs):
+        super().__init__(tag, idx, threshold, **kwargs)
+        self.buffer = deque([0, 0], maxlen=2)
+        self.can_be_triggered = True
+
+    def postprocess(self, classif_output):
+        event_detected = False
+
+        if classif_output is None:
+            pass
+        else:
+            self.buffer.append(classif_output[self.idx])
+
+            if self.can_be_triggered:
+                if self.buffer[1] > self.buffer[0] and self.buffer[1] > self.threshold:
+                    # Confidence rising and above threshold -> Approaching new peak
+                    event_detected = True
+                    self.can_be_triggered = False
+            else:
+                if self.buffer[0] > self.buffer[1]:
+                    # Confidence falling -> Peak is over
+                    self.can_be_triggered = True
+
+        return {self.tag: event_detected}
