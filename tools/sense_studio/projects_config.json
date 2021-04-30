@@ -1,0 +1,8 @@
+{
+  "AirDrums": {
+    "path": "/data/airdrums"
+  },
+  "AirDrums 32FPS": {
+    "path": "/data/airdrums_32fps"
+  }
+}

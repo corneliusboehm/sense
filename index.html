@@ -3,10 +3,18 @@ layout: default
 title: Home
 ---
 
-<ul>
-  {% for post in site.posts %}
-    <li>
-      <a href="{{ post.url | relative_url }}">{{ post.title }}</a>
-    </li>
-  {% endfor %}
-</ul>
+This is a fork of <a href="https://github.com/TwentyBN/sense">TwentyBN/sense</a>.
+Check out the posts here to see some of the demo applications that can quickly be built leveraging the
+transfer learning power of <code>sense</code> and the toolkit around it.
+
+<h1>Posts</h1>
+{% for post in site.posts %}
+  <a href="{{ post.url | relative_url }}">
+    <h2>{{ post.title }}</h2>
+  </a>
+  <p>
+    <em>{{ post.date | date_to_long_string }}</em>
+    <br>
+    {{ post.description }}
+  </p>
+{% endfor %}
