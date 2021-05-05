@@ -1,17 +1,17 @@
 LAB2INT_CLASSIFICATION = {
-    "holding_ball": 0,
-    "forearm_passing": 1,
-    "pokey": 2,
-    "dropping_ball": 3,
-    "doing_nothing": 4,
-    "bouncing_ball": 5,
-    "one_arm_passing": 6,
-    "leaving_screen": 7,
-    "overhead_passing": 8
+    "Holding Ball": 0,
+    "Forearm Passing": 1,
+    "Pokey": 2,
+    "Dropping Ball": 3,
+    "Doing Nothing": 4,
+    "Bouncing Ball": 5,
+    "One Arm Passing": 6,
+    "Leaving Screen": 7,
+    "Overhead Passing": 8
 }
 
 LAB2INT_COUNTING = {
-    "counting_background": 0,
+    "background": 0,
     "holding_ball_position_1": 1,
     "holding_ball_position_2": 2,
     "forearm_passing_position_1": 3,
@@ -35,4 +35,14 @@ LAB2INT_COUNTING = {
 INT2LAB_CLASSIFICATION = {value: key for key, value in LAB2INT_CLASSIFICATION.items()}
 INT2LAB_COUNTING = {value: key for key, value in LAB2INT_COUNTING.items()}
 
-CLASSIFICATION_THRESHOLDS = {key: 0.5 for key in LAB2INT_CLASSIFICATION}
+CLASSIFICATION_THRESHOLDS = {
+    "Holding Ball": 0.4,
+    "Forearm Passing": 0.6,
+    "Pokey": 0.85,
+    "Dropping Ball": 0.6,
+    "Doing Nothing": 0.4,
+    "Bouncing Ball": 0.6,
+    "One Arm Passing": 0.6,
+    "Leaving Screen": 0.8,
+    "Overhead Passing": 0.6
+}

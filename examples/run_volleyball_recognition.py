@@ -136,14 +136,15 @@ if __name__ == "__main__":
     display_ops = [
         sense.display.DisplayFPS(expected_camera_fps=net.fps,
                                  expected_inference_fps=net.fps / net.step_size),
-        sense.display.DisplayTopKClassificationOutputs(top_k=2, threshold=0),
+        sense.display.DisplayTopKClassificationOutputs(top_k=2, threshold=0, x_offset=455 if counter else 350),
     ]
 
     if counter:
-        display_ops.append(sense.display.DisplayCounts(y_offset=border_size_top + 20))
+        display_ops.append(sense.display.DisplayCounts(x_offset=455, y_offset=border_size_top + 10))
     else:
         display_ops.append(sense.display.DisplayClassnameOverlay(thresholds=CLASSIFICATION_THRESHOLDS,
-                                                                 border_size_top=border_size_top))
+                                                                 border_size_top=border_size_top,
+                                                                 duration=0.5))
 
     display_results = sense.display.DisplayResults(display_ops=display_ops,
                                                    border_size_top=border_size_top)
