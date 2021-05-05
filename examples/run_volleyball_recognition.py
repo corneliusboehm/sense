@@ -11,7 +11,8 @@ Usage:
   run_volleyball_recognition.py (-h | --help)
 
 Options:
-  --counter                  Run a counting model instead of a classification model
+  --counter                  Run a counting model instead of a classification model.
+                             Note: This works best with increasing the model fps to 30.
   --path_in=FILENAME         Video file to stream from
   --path_out=FILENAME        Video file to stream to
   --use_gpu                  Whether to run inference on the GPU or not.
@@ -74,61 +75,63 @@ if __name__ == "__main__":
 
     if counter:
         post_processors.extend([
-            # AggregatedPostProcessors(
-            #     post_processors=[
-            #         EventCounter(key='forearm_passing_position_1',
-            #                      key_idx=LAB2INT['forearm_passing_position_1'],
-            #                      threshold=0.05,
-            #                      out_key='forearm passes'),
-            #         EventCounter(key='overhead_passing_position_1',
-            #                      key_idx=LAB2INT['overhead_passing_position_1'],
-            #                      threshold=0.1,
-            #                      out_key='overhead passes'),
-            #         EventCounter(key='pokey_position_1',
-            #                      key_idx=LAB2INT['pokey_position_1'],
-            #                      threshold=0.2,
-            #                      out_key='pokeys'),
-            #         EventCounter(key='one_arm_passing_position_1',
-            #                      key_idx=LAB2INT['one_arm_passing_position_1'],
-            #                      threshold=0.1,
-            #                      out_key='one arm passes'),
-            #         EventCounter(key='bouncing_ball_position_1',
-            #                      key_idx=LAB2INT['bouncing_ball_position_1'],
-            #                      threshold=0.2,
-            #                      out_key='bounces'),
-            #     ],
-            #     out_key='counting',
-            # ),
             AggregatedPostProcessors(
                 post_processors=[
-                    TwoPositionsCounter(pos0_idx=LAB2INT['forearm_passing_position_1'],
-                                        pos1_idx=LAB2INT['forearm_passing_position_2'],
-                                        threshold0=0.1,
-                                        threshold1=0.05,
-                                        out_key='Forearm Passes'),
-                    TwoPositionsCounter(pos0_idx=LAB2INT['overhead_passing_position_1'],
-                                        pos1_idx=LAB2INT['overhead_passing_position_2'],
-                                        threshold0=0.18,  # v2: 0.2 v3: 0.15
-                                        threshold1=0.18,  # v2: 0.2 v3: 0.15
-                                        out_key='Overhead Passes'),
-                    TwoPositionsCounter(pos0_idx=LAB2INT['pokey_position_1'],
-                                        pos1_idx=LAB2INT['pokey_position_2'],
-                                        threshold0=0.1,
-                                        threshold1=0.1,
-                                        out_key='Pokeys'),
-                    TwoPositionsCounter(pos0_idx=LAB2INT['one_arm_passing_position_1'],
-                                        pos1_idx=LAB2INT['one_arm_passing_position_2'],
-                                        threshold0=0.2,  # v2: 0.1
-                                        threshold1=0.2,  # v2: 0.1
-                                        out_key='One Arm Passes'),
-                    TwoPositionsCounter(pos0_idx=LAB2INT['bouncing_ball_position_1'],
-                                        pos1_idx=LAB2INT['bouncing_ball_position_2'],
-                                        threshold0=0.1,
-                                        threshold1=0.1,
-                                        out_key='Bounces'),
+                    EventCounter(key='forearm_passing_position_1',
+                                 key_idx=LAB2INT['forearm_passing_position_1'],
+                                 threshold=0.1,
+                                 out_key='forearm passes'),
+                    EventCounter(key='overhead_passing_position_1',
+                                 key_idx=LAB2INT['overhead_passing_position_1'],
+                                 threshold=0.12,
+                                 out_key='overhead passes'),
+                    EventCounter(key='pokey_position_1',
+                                 key_idx=LAB2INT['pokey_position_1'],
+                                 threshold=0.12,
+                                 out_key='pokeys'),
+                    EventCounter(key='one_arm_passing_position_1',
+                                 key_idx=LAB2INT['one_arm_passing_position_1'],
+                                 threshold=0.28,
+                                 out_key='one arm passes'),
+                    EventCounter(key='bouncing_ball_position_1',
+                                 key_idx=LAB2INT['bouncing_ball_position_1'],
+                                 threshold=0.05,
+                                 out_key='bounces'),
                 ],
                 out_key='counting',
             ),
+
+            # Alternatively use TwoPositionsCounter with similar results:
+            # AggregatedPostProcessors(
+            #     post_processors=[
+            #         TwoPositionsCounter(pos0_idx=LAB2INT['forearm_passing_position_1'],
+            #                             pos1_idx=LAB2INT['forearm_passing_position_2'],
+            #                             threshold0=0.1,
+            #                             threshold1=0.07,
+            #                             out_key='Forearm Passes'),
+            #         TwoPositionsCounter(pos0_idx=LAB2INT['overhead_passing_position_1'],
+            #                             pos1_idx=LAB2INT['overhead_passing_position_2'],
+            #                             threshold0=0.20,
+            #                             threshold1=0.20,
+            #                             out_key='Overhead Passes'),
+            #         TwoPositionsCounter(pos0_idx=LAB2INT['pokey_position_1'],
+            #                             pos1_idx=LAB2INT['pokey_position_2'],
+            #                             threshold0=0.08,
+            #                             threshold1=0.08,
+            #                             out_key='Pokeys'),
+            #         TwoPositionsCounter(pos0_idx=LAB2INT['one_arm_passing_position_1'],
+            #                             pos1_idx=LAB2INT['one_arm_passing_position_2'],
+            #                             threshold0=0.22,
+            #                             threshold1=0.22,
+            #                             out_key='One Arm Passes'),
+            #         TwoPositionsCounter(pos0_idx=LAB2INT['bouncing_ball_position_1'],
+            #                             pos1_idx=LAB2INT['bouncing_ball_position_2'],
+            #                             threshold0=0.5,
+            #                             threshold1=0.13,
+            #                             out_key='Bounces'),
+            #     ],
+            #     out_key='counting',
+            # ),
         ])
 
     border_size_top = 55
@@ -140,7 +143,10 @@ if __name__ == "__main__":
     ]
 
     if counter:
-        display_ops.append(sense.display.DisplayCounts(x_offset=455, y_offset=border_size_top + 10))
+        display_ops.append(sense.display.DisplayCounts(x_offset=455,
+                                                       y_offset=border_size_top + 10,
+                                                       highlight_changes=True,
+                                                       fps=net.fps))
     else:
         display_ops.append(sense.display.DisplayClassnameOverlay(thresholds=CLASSIFICATION_THRESHOLDS,
                                                                  border_size_top=border_size_top,
