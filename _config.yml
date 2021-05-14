@@ -1,2 +1,6 @@
-theme: jekyll-theme-slate
+author: Cornelius Böhm
+theme: minima
 baseurl: /sense
+show_excerpts: true
+github_username:  corneliusboehm
+linkedin_username: corneliusboehm

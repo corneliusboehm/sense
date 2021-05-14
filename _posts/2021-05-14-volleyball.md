@@ -1,12 +1,10 @@
 ---
-layout: default
+layout: post
 title:  "Teaching an AI to play volleyball in 5 minutes"
-description: "Training a video recognition model for classification and counting of different volleyball techniques
+excerpt: "Training a video recognition model for classification and counting of different volleyball techniques
 on only five minutes of video data using transfer learning."
+author: Cornelius Böhm
 ---
-
-# {{ page.title }}
-_{{ page.date | date_to_long_string }}_
 
 With the pandemic still not allowing us to enjoy sports in a group, I wanted to use a hackathon at 
 [TwentyBN](https://20bn.com/) to at least play some volleyball with an AI :robot::volleyball:
@@ -25,49 +23,51 @@ model that worked alright. Of course there is still a lot that could be improved
 quick proof of concept. See the videos at the end of this post for an impression.
 
 
-### Data Collection
+## Data Collection
 For the data collection (in December :cold_face:), I chose four common volleyball techniques as well as five other
 actions to serve as background data.
 
-__Techniques__
+### Techniques
 <figure style="display: inline-block; margin: 0;">
-    <img src="{{ '/assets/forearm.gif' | relative_url }}" alt="Forearm passing" width="150"/>
+    <img src="{{ '/assets/forearm.gif' | relative_url }}" alt="Forearm passing" width="140"/>
     <figcaption style="text-align: center;">Forearm Passing</figcaption>
 </figure>
 <figure style="display: inline-block; margin: 0;">
-    <img src="{{ '/assets/overhead.gif' | relative_url }}" alt="Overhead passing" width="150"/>
+    <img src="{{ '/assets/overhead.gif' | relative_url }}" alt="Overhead passing" width="140"/>
     <figcaption style="text-align: center;">Overhead Passing</figcaption>
 </figure>
 <figure style="display: inline-block; margin: 0;">
-    <img src="{{ '/assets/onearm.gif' | relative_url }}" alt="One arm passing" width="150"/>
+    <img src="{{ '/assets/onearm.gif' | relative_url }}" alt="One arm passing" width="140"/>
     <figcaption style="text-align: center;">One Arm Passing</figcaption>
 </figure>
 <figure style="display: inline-block; margin: 0;">
-    <img src="{{ '/assets/pokey.gif' | relative_url }}" alt="Pokey" width="150"/>
+    <img src="{{ '/assets/pokey.gif' | relative_url }}" alt="Pokey" width="140"/>
     <figcaption style="text-align: center;">Pokey</figcaption>
 </figure>
+<h2></h2>  <!-- Just to add vertical space -->
 
-__Background__
+### Background
 <figure style="display: inline-block; margin: 0;">
-    <img src="{{ '/assets/nothing.gif' | relative_url }}" alt="Doing nothing" width="150"/>
+    <img src="{{ '/assets/nothing.gif' | relative_url }}" alt="Doing nothing" width="140"/>
     <figcaption style="text-align: center;">Doing Nothing</figcaption>
 </figure>
 <figure style="display: inline-block; margin: 0;">
-    <img src="{{ '/assets/hold.gif' | relative_url }}" alt="Holding the ball" width="150"/>
+    <img src="{{ '/assets/hold.gif' | relative_url }}" alt="Holding the ball" width="140"/>
     <figcaption style="text-align: center;">Holding</figcaption>
 </figure>
 <figure style="display: inline-block; margin: 0;">
-    <img src="{{ '/assets/bounce.gif' | relative_url }}" alt="Bouncing the ball" width="150"/>
+    <img src="{{ '/assets/bounce.gif' | relative_url }}" alt="Bouncing the ball" width="140"/>
     <figcaption style="text-align: center;">Bouncing</figcaption>
 </figure>
 <figure style="display: inline-block; margin: 0;">
-    <img src="{{ '/assets/drop.gif' | relative_url }}" alt="Dropping the ball" width="150"/>
+    <img src="{{ '/assets/drop.gif' | relative_url }}" alt="Dropping the ball" width="140"/>
     <figcaption style="text-align: center;">Dropping</figcaption>
 </figure>
 <figure style="display: inline-block; margin: 0;">
-    <img src="{{ '/assets/leave.gif' | relative_url }}" alt="Leaving" width="150"/>
+    <img src="{{ '/assets/leave.gif' | relative_url }}" alt="Leaving" width="140"/>
     <figcaption style="text-align: center;">Leaving</figcaption>
 </figure>
+<h2></h2>  <!-- Just to add vertical space -->
 
 Overall, 38 videos of varying length were collected and split into test and validation data: 
 
@@ -90,7 +90,7 @@ tags everywhere.
 ![Annotating a forearm-passing video]({{ '/assets/forearm_tagging.png' | relative_url }})
 
 
-### Classification
+## Classification
 Now it's time to train the first model! With `StridedInflatedEfficientNet-pro` as the pretrained backbone model, it is
 usually helpful to not only add our new classification head, but also fine-tune the last 9 backbone layers. This
 includes two of the temporal 3D convolution layers, which gives your updated model more capability to learn new motions.
@@ -107,6 +107,7 @@ in sequence:
         Browser not compatible.
     </iframe>
 </div>
+<h2></h2>  <!-- Just to add vertical space -->
 
 Again, the background classes in the beginning are not really confidently predicted. In the rest of the video however
 the used techniques are always recognized with only a short delay, even in some cases where different actions happen in
@@ -114,7 +115,7 @@ quick succession. This is especially impressive as the model was only trained on
 were repeated over and over again.
 
 
-### Counting
+## Counting
 When training the model on temporal annotations instead, it doesn't make as much sense to examine the confusion matrix,
 as the events to be detected are only labeled for one frame, so if the model is just one step late in its prediction,
 that would be counted as a miss.
@@ -128,6 +129,7 @@ Therefore, let's directly take a look at the model's behavior in practice:
         Browser not compatible.
     </iframe>
 </div>
+<h2></h2>  <!-- Just to add vertical space -->
 
 Here is a comparison with what the model should have predicted:
 
@@ -143,7 +145,7 @@ Clearly, the model missed a few contacts and - to be fair - not all the counted 
 Still, for a model that was trained in a short time on very little data, this is already a promising outcome.
 
 
-### Next Steps
+## Next Steps
 These results have been obtained on data from just one person and thresholds have been tuned for these demo videos, so
 I expect bad generalization performance.
 An obvious next step would be to record more data in different settings and starring more people.
@@ -153,5 +155,3 @@ Those should enable the model to react even more quickly to changes and count ea
 
 For now, these first results make me really optimistic, and I am looking forward to seeing what other exciting
 applications of the `Sense` video recognition toolkit are possible!
-
-[Home]({{ '/' | relative_url }})
