@@ -28,46 +28,44 @@ For the data collection (in December :cold_face:), I chose four common volleybal
 actions to serve as background data.
 
 ### Techniques
-<figure style="display: inline-block; margin: 0;">
+<figure class="gif-figure">
     <img src="{{ '/assets/forearm.gif' | relative_url }}" alt="Forearm passing" width="140"/>
-    <figcaption style="text-align: center;">Forearm Passing</figcaption>
+    <figcaption class="gif-caption">Forearm Passing</figcaption>
 </figure>
-<figure style="display: inline-block; margin: 0;">
+<figure class="gif-figure">
     <img src="{{ '/assets/overhead.gif' | relative_url }}" alt="Overhead passing" width="140"/>
-    <figcaption style="text-align: center;">Overhead Passing</figcaption>
+    <figcaption class="gif-caption">Overhead Passing</figcaption>
 </figure>
-<figure style="display: inline-block; margin: 0;">
+<figure class="gif-figure">
     <img src="{{ '/assets/onearm.gif' | relative_url }}" alt="One arm passing" width="140"/>
-    <figcaption style="text-align: center;">One Arm Passing</figcaption>
+    <figcaption class="gif-caption">One Arm Passing</figcaption>
 </figure>
-<figure style="display: inline-block; margin: 0;">
+<figure class="gif-figure">
     <img src="{{ '/assets/pokey.gif' | relative_url }}" alt="Pokey" width="140"/>
-    <figcaption style="text-align: center;">Pokey</figcaption>
+    <figcaption class="gif-caption">Pokey</figcaption>
 </figure>
-<h2></h2>  <!-- Just to add vertical space -->
 
 ### Background
-<figure style="display: inline-block; margin: 0;">
+<figure class="gif-figure">
     <img src="{{ '/assets/nothing.gif' | relative_url }}" alt="Doing nothing" width="140"/>
-    <figcaption style="text-align: center;">Doing Nothing</figcaption>
+    <figcaption class="gif-caption">Doing Nothing</figcaption>
 </figure>
-<figure style="display: inline-block; margin: 0;">
+<figure class="gif-figure">
     <img src="{{ '/assets/hold.gif' | relative_url }}" alt="Holding the ball" width="140"/>
-    <figcaption style="text-align: center;">Holding</figcaption>
+    <figcaption class="gif-caption">Holding</figcaption>
 </figure>
-<figure style="display: inline-block; margin: 0;">
+<figure class="gif-figure">
     <img src="{{ '/assets/bounce.gif' | relative_url }}" alt="Bouncing the ball" width="140"/>
-    <figcaption style="text-align: center;">Bouncing</figcaption>
+    <figcaption class="gif-caption">Bouncing</figcaption>
 </figure>
-<figure style="display: inline-block; margin: 0;">
+<figure class="gif-figure">
     <img src="{{ '/assets/drop.gif' | relative_url }}" alt="Dropping the ball" width="140"/>
-    <figcaption style="text-align: center;">Dropping</figcaption>
+    <figcaption class="gif-caption">Dropping</figcaption>
 </figure>
-<figure style="display: inline-block; margin: 0;">
+<figure class="gif-figure">
     <img src="{{ '/assets/leave.gif' | relative_url }}" alt="Leaving" width="140"/>
-    <figcaption style="text-align: center;">Leaving</figcaption>
+    <figcaption class="gif-caption">Leaving</figcaption>
 </figure>
-<h2></h2>  <!-- Just to add vertical space -->
 
 Overall, 38 videos of varying length were collected and split into test and validation data: 
 
@@ -101,13 +99,12 @@ As you can see, the model still has difficulties distinguishing the background c
 but on the four main techniques it makes no mistakes. Now let's see it in action on a video clip of different techniques
 in sequence:
 
-<div style="position: relative; overflow: hidden; padding-top: 56.25%">
+<div class="responsive-iframe-div">
     <iframe src="https://drive.google.com/file/d/1aeceeHI_COsXIpRPtAHKi-G37mtBUVuW/preview"
-        style="position: absolute; top: 0; left: 0; width: 100%; height: 100%; border: 0" allowfullscreen>
+        class="responsive-iframe" allowfullscreen>
         Browser not compatible.
     </iframe>
 </div>
-<h2></h2>  <!-- Just to add vertical space -->
 
 Again, the background classes in the beginning are not really confidently predicted. In the rest of the video however
 the used techniques are always recognized with only a short delay, even in some cases where different actions happen in
@@ -123,13 +120,12 @@ Furthermore, a few tricks can be applied in post-processing to make the counting
 counting rising flanks of model outputs or using two markers to count an action with multiple key points.
 Therefore, let's directly take a look at the model's behavior in practice: 
 
-<div style="position: relative; overflow: hidden; padding-top: 56.25%">
+<div class="responsive-iframe-div">
     <iframe src="https://drive.google.com/file/d/1HuR2o76f3Zy7F371BJQk4hotw7Qk9ZmU/preview"
-        style="position: absolute; top: 0; left: 0; width: 100%; height: 100%; border: 0" allowfullscreen>
+        class="responsive-iframe" allowfullscreen>
         Browser not compatible.
     </iframe>
 </div>
-<h2></h2>  <!-- Just to add vertical space -->
 
 Here is a comparison with what the model should have predicted:
 
