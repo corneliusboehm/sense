@@ -3,6 +3,7 @@ layout: post
 title:  "Teaching an AI to play volleyball in 5 minutes"
 excerpt: "Training a video recognition model for classification and counting of different volleyball techniques
 on only five minutes of video data using transfer learning."
+image: /assets/volleyball_preview.png
 author: Cornelius Böhm
 ---
 

@@ -4,6 +4,23 @@
 
 @import "minima";
 
+.post-table {
+  td {
+    border: 0;
+    padding: 0;
+  }
+
+  .image-td {
+    padding-right: 15px;
+  }
+
+  border: 0px;
+}
+
+.preview-image {
+  width: 500px;
+}
+
 .gif-figure {
   display: inline-block;
 }
