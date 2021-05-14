@@ -7,7 +7,7 @@ Currently included:
 You can download the fine-tuned model weights for these demos
 [here](https://drive.google.com/drive/folders/1Qmb7KGgynIDWjTwL-XOiUsfGj-FEwIZv?usp=sharing) and extract them into the
 `resources/` folder.
-Make sure you have also downloaded the pre-trained `backbone` weights as described below.
+Make sure you have also obtained the pre-trained `backbone` weights as described below.
 
 ---
 
