@@ -4,3 +4,5 @@ baseurl: /sense
 show_excerpts: true
 github_username:  corneliusboehm
 linkedin_username: corneliusboehm
+plugins:
+  - jemoji
