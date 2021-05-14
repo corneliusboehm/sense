@@ -24,7 +24,7 @@ quick proof of concept. See the videos at the end of this post for an impression
 
 
 ## Data Collection
-For the data collection (in December :cold_face:), I chose four common volleyball techniques as well as five other
+For the data collection (in December :snowflake:), I chose four common volleyball techniques as well as five other
 actions to serve as background data.
 
 ### Techniques
