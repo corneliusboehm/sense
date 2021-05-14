@@ -2,7 +2,7 @@ This is a fork of [TwentyBN/sense](https://github.com/TwentyBN/sense).
 Check out the [blog posts](https://corneliusboehm.github.io/sense/) on this fork to see some video recognition
 applications that can quickly be built leveraging the transfer learning power of `Sense` and its toolkit.
 Currently included:
-- [Volleyball technique classifier and counter](https://corneliusboehm.github.io/sense/2021/05/14/volleyball.html)
+- [Volleyball technique classifier and counter](https://github.com/corneliusboehm/sense/blob/master/examples/run_volleyball_recognition.py)
 
 You can download the fine-tuned model weights for these demos
 [here](https://drive.google.com/drive/folders/1Qmb7KGgynIDWjTwL-XOiUsfGj-FEwIZv?usp=sharing) and extract them into the
