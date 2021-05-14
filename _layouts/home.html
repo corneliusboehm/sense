@@ -18,7 +18,7 @@ layout: default
         <table class="post-table">
           <tr>
             <td class="image-td">
-              <img src="{{ post.image }}" class="preview-image">
+              <img src="{{ post.image | relative_url }}" class="preview-image">
             </td>
             <td>
               <span class="post-meta">{{ post.date | date: date_format }}</span>
