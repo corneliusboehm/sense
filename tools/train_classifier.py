@@ -34,6 +34,8 @@ import os
 import sys
 
 from docopt import docopt
+from natsort import natsorted
+from natsort import ns
 import torch.utils.data
 
 from sense.downstream_tasks.nn_utils import LogisticRegression
@@ -117,27 +119,32 @@ def train_model(path_in, path_out, model_name, model_version, num_layers_to_fine
         fine_tuned_layers = backbone_network.cnn[-num_layers_to_finetune:]
         backbone_network.cnn = backbone_network.cnn[0:-num_layers_to_finetune]
 
-    # finetune the model
-    extract_features(path_in, selected_config, backbone_network, num_layers_to_finetune, use_gpu,
-                     num_timesteps=num_timesteps, log_fn=log_fn)
+    project_config = load_project_config(path_in)
 
     # Find label names
-    label_names = os.listdir(directories.get_videos_dir(path_in, 'train'))
-    label_names = [x for x in label_names if not x.startswith('.')]
-    label_names_temporal = ['background']
-
-    project_config = load_project_config(path_in)
     if project_config:
-        for temporal_tags in project_config['classes'].values():
-            label_names_temporal.extend(temporal_tags)
+        label_names = project_config['classes'].keys()
+    else:
+        label_names = os.listdir(directories.get_videos_dir(path_in, 'train'))
+
+    label_names = natsorted(label_names, alg=ns.IC)
+    label_names = [x for x in label_names if not x.startswith('.')]
+
+    label_names_temporal = ['background']
+    if project_config:
+        tags = project_config['tags']
+        label_names_temporal.extend(tags.values())
     else:
         for label in label_names:
             label_names_temporal.extend([f'{label}_tag1', f'{label}_tag2'])
+    label_names_temporal = natsorted(label_names_temporal, alg=ns.IC)
 
-    label_names_temporal = sorted(set(label_names_temporal))
-
-    label2int_temporal_annotation = {name: index for index, name in enumerate(label_names_temporal)}
     label2int = {name: index for index, name in enumerate(label_names)}
+    label2int_temporal_annotation = {name: index for index, name in enumerate(label_names_temporal)}
+
+    # Extract features for all videos
+    extract_features(path_in, label_names, selected_config, backbone_network, num_layers_to_finetune, use_gpu,
+                     num_timesteps=num_timesteps, log_fn=log_fn)
 
     extractor_stride = backbone_network.num_required_frames_per_layer_padding[0]
 
@@ -227,8 +234,9 @@ def train_model(path_in, path_out, model_name, model_version, num_layers_to_fine
 
     # Train model
     best_model_state_dict = training_loops(net, train_loader, valid_loader, use_gpu, num_epochs, lr_schedule,
-                                           label_names, path_out, temporal_annotation_training=temporal_training,
-                                           log_fn=log_fn, confmat_event=confmat_event)
+                                           label_names, label_names_temporal, path_out,
+                                           temporal_annotation_training=temporal_training, log_fn=log_fn,
+                                           confmat_event=confmat_event)
 
     # Save best model
     if isinstance(net, Pipe):

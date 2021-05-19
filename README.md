@@ -64,18 +64,21 @@ Make sure you have also obtained the pre-trained `backbone` weights as described
 ###### Gesture Recognition
 
 <p align="center">
-    <img src="https://raw.githubusercontent.com/TwentyBN/sense/master/docs/gifs/gesture_recognition_1.gif" width="300px">
-    <img src="https://raw.githubusercontent.com/TwentyBN/sense/master/docs/gifs/gesture_recognition_2.gif" width="300px">
+    <img src="docs/gifs/gesture_recognition_1.gif" width="300px">
+    <img src="docs/gifs/gesture_recognition_2.gif" width="300px">
 </p>
 
 *(full video can be found [here](https://drive.google.com/file/d/1G5OaCsPco_4H7F5-s6n2Mm3wI5V9K6WE/view?usp=sharing))*
 
+<p align="center">
+    <img src="docs/gifs/hand_gesture_event_detection.gif" width="600px" height="300px">
+</p>
 
 ###### Fitness Activity Tracker and Calorie Estimation
 
 <p align="center">
-    <img src="https://raw.githubusercontent.com/TwentyBN/sense/master/docs/gifs/fitness_tracking_1.gif" width="300px">
-    <img src="https://raw.githubusercontent.com/TwentyBN/sense/master/docs/gifs/fitness_tracking_2.gif" width="300px">
+    <img src="docs/gifs/fitness_tracking_1.gif" width="300px">
+    <img src="docs/gifs/fitness_tracking_2.gif" width="300px">
 </p>
 
 *(full video can be found [here](https://drive.google.com/file/d/1f1y0wg7Y1kpSBwKSEFx1TDoD5lGA8DtQ/view?usp=sharing))*
@@ -291,7 +294,7 @@ PYTHONPATH=./ python tools/run_custom_classifier.py --custom_classifier=/path/to
 You can further improve your model's performance by training on top of temporally annotated data; 
 individually tagged frames that identify the event locally in the video versus treating every frame with the same 
 label. For instructions on how to prepare your data with temporal annotations, refer to this 
-[page](https://github.com/TwentyBN/sense/wiki/tools#temporal-annotations-tool).
+[page](https://github.com/TwentyBN/sense/wiki/SenseStudio#temporal-annotations).
 
 After preparing the temporal annotations for your dataset in SenseStudio, you can run the training with the
 `Temporal Annotations` flag enabled to train on those frame-wise tags instead of the whole-video classes.
@@ -325,6 +328,11 @@ python tools/conversion/convert_to_tflite.py --classifier=custom_classifier --pa
 ## Contributing
 -->
 <!-- Describe how developers can contribute --> 
+
+## Gallery
+
+Our [gallery](https://github.com/TwentyBN/sense/wiki/gallery) lists cool external projects that were built using Sense. Check it out! 
+
 
 ## Citation
 
