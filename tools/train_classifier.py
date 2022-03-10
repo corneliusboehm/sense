@@ -11,6 +11,7 @@ Usage:
                        [--use_gpu]
                        [--path_out=PATH]
                        [--temporal_training]
+                       [--multilabel]
                        [--resume]
                        [--overwrite]
   train_classifier.py  (-h | --help)
@@ -25,6 +26,9 @@ Options:
   --path_out=PATH                Where to save results. Will default to `path_in` if not provided.
   --temporal_training            Use this flag if your dataset has been annotated with the temporal
                                  annotations tool
+  --multilabel                   Use this flag to allow one item to have multiple labels at the same time.
+                                 Therefore, instead of applying a softmax on the model outputs, a sigmoid layer will
+                                 be used last.
   --resume                       Initialize weights from the last saved checkpoint and restart training
   --overwrite                    Allow overwriting existing checkpoint files in the output folder (path_out)
 """
@@ -60,7 +64,7 @@ SUPPORTED_MODEL_CONFIGURATIONS = [
 
 
 def train_model(path_in, path_out, model_name, model_version, num_layers_to_finetune, epochs,
-                use_gpu=True, overwrite=True, temporal_training=None, resume=False, log_fn=print,
+                use_gpu=True, overwrite=True, temporal_training=None, multilabel=False, resume=False, log_fn=print,
                 confmat_event=None):
     os.makedirs(path_out, exist_ok=True)
 
@@ -155,6 +159,7 @@ def train_model(path_in, path_out, model_name, model_version, num_layers_to_fine
         num_timesteps=num_timesteps,
         stride=extractor_stride,
         temporal_annotation_only=temporal_training,
+        one_hot=multilabel,
     )
 
     features_dir = directories.get_features_dir(path_in, 'valid', selected_config, num_layers_to_finetune)
@@ -171,6 +176,7 @@ def train_model(path_in, path_out, model_name, model_version, num_layers_to_fine
         shuffle=False,
         stride=extractor_stride,
         temporal_annotation_only=temporal_training,
+        one_hot=multilabel,
     )
 
     # Check if the data is loaded fully
@@ -253,6 +259,7 @@ if __name__ == "__main__":
     _num_layers_to_finetune = int(args['--num_layers_to_finetune'])
     _epochs = int(args['--epochs'])
     _temporal_training = args['--temporal_training']
+    _multilabel = args['--multilabel']
     _resume = args['--resume']
     _overwrite = args['--overwrite']
 
@@ -266,5 +273,6 @@ if __name__ == "__main__":
         use_gpu=_use_gpu,
         overwrite=_overwrite,
         temporal_training=_temporal_training,
+        multilabel=_multilabel,
         resume=_resume,
     )

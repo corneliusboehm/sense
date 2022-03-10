@@ -8,6 +8,7 @@ import numpy as np
 import torch
 import torch.nn as nn
 import torch.optim as optim
+from torch.functional import F
 from PIL import Image
 from sklearn.metrics import confusion_matrix
 
@@ -46,14 +47,18 @@ class FeaturesDataset(torch.utils.data.Dataset):
     """
 
     def __init__(self, files, labels, temporal_annotation, full_network_minimum_frames,
-                 num_timesteps=None, stride=4):
+                 num_timesteps=None, stride=4, one_hot=False):
         self.files = files
         self.labels = labels
         self.num_timesteps = num_timesteps
         self.stride = stride
+        self.one_hot = one_hot
         self.temporal_annotations = temporal_annotation
         # Compute the number of features that come from padding:
         self.num_frames_padded = int((full_network_minimum_frames - 1) / self.stride)
+
+        self.num_labels = max(labels) + 1
+        self.num_temporal_labels = max(max(t) for t in temporal_annotation) + 1
 
     def __len__(self):
         return len(self.files)
@@ -93,14 +98,20 @@ class FeaturesDataset(torch.utils.data.Dataset):
                 features = features[position: position + self.num_timesteps]
             # will assume that we need only one output
         if temporal_annotation is None:
-            temporal_annotation = [-100]
-        return [features, self.labels[idx], temporal_annotation]
+            temporal_annotation = [0]
+
+        label = self.labels[idx]
+        if self.one_hot:
+            label = F.one_hot(torch.tensor(label), self.num_labels)
+            F.one_hot(torch.tensor(temporal_annotation), self.num_temporal_labels)
+
+        return [features, label, temporal_annotation]
 
 
 def generate_data_loader(project_config, features_dir, tags_dir, label_names, label2int,
                          label2int_temporal_annotation, num_timesteps=5, batch_size=16, shuffle=True,
                          stride=4, temporal_annotation_only=False,
-                         full_network_minimum_frames=MODEL_TEMPORAL_DEPENDENCY):
+                         full_network_minimum_frames=MODEL_TEMPORAL_DEPENDENCY, one_hot=False):
     # Find pre-computed features and derive corresponding labels
     labels_string = []
     temporal_annotation = []
@@ -139,7 +150,8 @@ def generate_data_loader(project_config, features_dir, tags_dir, label_names, la
     # Build data-loader
     dataset = FeaturesDataset(features, labels, temporal_annotation,
                               num_timesteps=num_timesteps, stride=stride,
-                              full_network_minimum_frames=full_network_minimum_frames)
+                              full_network_minimum_frames=full_network_minimum_frames,
+                              one_hot=one_hot)
     try:
         return torch.utils.data.DataLoader(dataset, shuffle=shuffle, batch_size=batch_size)
     except ValueError:
@@ -291,8 +303,8 @@ def extract_features(path_in, model_config, net, num_layers_finetune, use_gpu, n
 
 
 def training_loops(net, train_loader, valid_loader, use_gpu, num_epochs, lr_schedule, label_names, path_out,
-                   temporal_annotation_training=False, log_fn=print, confmat_event=None):
-    criterion = nn.CrossEntropyLoss()
+                   temporal_annotation_training=False, multilabel=False, log_fn=print, confmat_event=None):
+    criterion = nn.CrossEntropyLoss() if not multilabel else nn.BCEWithLogitsLoss()
     optimizer = optim.Adam(net.parameters(), lr=0.0001)
 
     best_state_dict = None
@@ -309,10 +321,12 @@ def training_loops(net, train_loader, valid_loader, use_gpu, num_epochs, lr_sche
         net.train()
         train_loss, train_top1, cnf_matrix = run_epoch(train_loader, net, criterion, optimizer,
                                                        use_gpu,
-                                                       temporal_annotation_training=temporal_annotation_training)
+                                                       temporal_annotation_training=temporal_annotation_training,
+                                                       multilabel=multilabel)
         net.eval()
         valid_loss, valid_top1, cnf_matrix = run_epoch(valid_loader, net, criterion, None, use_gpu,
-                                                       temporal_annotation_training=temporal_annotation_training)
+                                                       temporal_annotation_training=temporal_annotation_training,
+                                                       multilabel=multilabel)
 
         log_fn('[%d] train loss: %.3f train top1: %.3f valid loss: %.3f top1: %.3f'
                % (epoch + 1, train_loss, train_top1, valid_loss, valid_top1))
@@ -338,7 +352,7 @@ def training_loops(net, train_loader, valid_loader, use_gpu, num_epochs, lr_sche
 
 
 def run_epoch(data_loader, net, criterion, optimizer=None, use_gpu=False,
-              temporal_annotation_training=False):
+              temporal_annotation_training=False, multilabel=False):
     running_loss = 0.0
     epoch_top_predictions = []
     epoch_labels = []
@@ -385,6 +399,10 @@ def run_epoch(data_loader, net, criterion, optimizer=None, use_gpu=False,
             loss.backward()
             optimizer.step()
             optimizer.zero_grad()
+
+        # Convert one-hot encoded targets to indices
+        if multilabel:
+            targets = targets.argmax(dim=1)
 
         # Store label and predictions to compute statistics later
         epoch_labels += list(targets.cpu().numpy())
